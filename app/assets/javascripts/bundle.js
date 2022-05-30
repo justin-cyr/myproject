@@ -56747,7 +56747,19 @@ __webpack_require__.r(__webpack_exports__);
 
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.getElementById("root");
-  const store = (0,_frontend_store_store__WEBPACK_IMPORTED_MODULE_2__["default"])();
+  let preloadedState = {};
+
+  if (window.currentUser) {
+    preloadedState = { ...preloadedState,
+      session: {
+        currentUser: window.currentUser.user
+      }
+    };
+  }
+
+  const store = (0,_frontend_store_store__WEBPACK_IMPORTED_MODULE_2__["default"])(preloadedState);
+  window.getState = store.getState;
+  window.dispatch = store.dispatch;
   react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_frontend_components_root__WEBPACK_IMPORTED_MODULE_3__["default"], {
     store: store
   }), root);
