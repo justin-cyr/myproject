@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  simulation_id: MyString
+  timestamp: 1
+  quote_set: MyString
+
+two:
+  simulation_id: MyString
+  timestamp: 1
+  quote_set: MyString
