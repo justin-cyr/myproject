@@ -27,6 +27,10 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'jquery-rails'
 
+# Gems for Finnhub data
+gem 'finnhub_ruby', '~> 1.1.16'
+gem 'distribution', '~> 0.8.0'
+
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 
