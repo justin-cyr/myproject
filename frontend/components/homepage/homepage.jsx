@@ -63,6 +63,7 @@ class Homepage extends React.Component {
         this.state = {
             numButtonClicks: 0,
             showModal: false,
+            tickersAndNames: [],
             // simulation parameters
             startTime: defaultStartTime,
             endTime: defaultEndTime,
@@ -104,6 +105,13 @@ class Homepage extends React.Component {
         this.validateForm = this.validateForm.bind(this);
         this.displayStringToDate = this.displayStringToDate.bind(this);
     };
+
+    async getStockSymbols() {
+        fetch('stock_symbols')
+            .then(response => response.text())
+            .then(text => text.split('\n').map(t => Object({ name: t })))
+            .then(lines => { this.setState({ tickersAndNames: lines }); })
+    }
 
     dateToDisplayString(d) {
         // return date as string in format "yyyy-mm-ddThh:mm" (used in datetime-local input)
@@ -276,6 +284,10 @@ class Homepage extends React.Component {
         }, 
             () => { console.log("Clicked button in modal.") }
         );
+    }
+
+    componentDidMount() {
+        this.getStockSymbols();
     }
 
     render() {

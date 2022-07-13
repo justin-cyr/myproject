@@ -1153,6 +1153,7 @@ class Homepage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) 
     this.state = {
       numButtonClicks: 0,
       showModal: false,
+      tickersAndNames: [],
       // simulation parameters
       startTime: defaultStartTime,
       endTime: defaultEndTime,
@@ -1192,6 +1193,16 @@ class Homepage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) 
     this.modalButtonClickFunction = this.modalButtonClickFunction.bind(this);
     this.validateForm = this.validateForm.bind(this);
     this.displayStringToDate = this.displayStringToDate.bind(this);
+  }
+
+  async getStockSymbols() {
+    fetch('stock_symbols').then(response => response.text()).then(text => text.split('\n').map(t => Object({
+      name: t
+    }))).then(lines => {
+      this.setState({
+        tickersAndNames: lines
+      });
+    });
   }
 
   dateToDisplayString(d) {
@@ -1348,6 +1359,10 @@ class Homepage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) 
     }, () => {
       console.log("Clicked button in modal.");
     });
+  }
+
+  componentDidMount() {
+    this.getStockSymbols();
   }
 
   render() {

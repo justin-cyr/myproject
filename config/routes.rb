@@ -5,4 +5,5 @@ Rails.application.routes.draw do
     end
     get 'static_pages/root'
     root 'static_pages#root'
+    get 'stock_symbols', :to => redirect('/stock_symbols.txt')
 end
