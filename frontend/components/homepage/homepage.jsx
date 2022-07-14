@@ -7,6 +7,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 
+import FuzzySearch from 'react-fuzzy';
+
 class Homepage extends React.Component {
 
     constructor(props) {
@@ -104,6 +106,7 @@ class Homepage extends React.Component {
         this.modalButtonClickFunction = this.modalButtonClickFunction.bind(this);
         this.validateForm = this.validateForm.bind(this);
         this.displayStringToDate = this.displayStringToDate.bind(this);
+        this.onTickerSelect = this.onTickerSelect.bind(this);
     };
 
     async getStockSymbols() {
@@ -111,6 +114,17 @@ class Homepage extends React.Component {
             .then(response => response.text())
             .then(text => text.split('\n').map(t => Object({ name: t })))
             .then(lines => { this.setState({ tickersAndNames: lines }); })
+    }
+
+    onTickerSelect(selected) {
+        const toAdd = selected['name'];
+        let securitySet = this.state.securitySet;
+        if (!securitySet.includes(toAdd)) {
+            let i = 0;
+            while (toAdd > securitySet[i]) { ++i; }
+            securitySet.splice(i, 0, toAdd);
+            this.setState({ securitySet: securitySet });
+        }
     }
 
     dateToDisplayString(d) {
@@ -384,6 +398,27 @@ class Homepage extends React.Component {
                                             <Form.Control.Feedback
                                                 type="invalid"
                                             >{this.state.initialCashErrorMsg}</Form.Control.Feedback>
+                                        </Col>
+                                    </Form.Group>
+                                </Row>
+                                <Row>
+                                    <Form.Group
+                                        as={Row}
+                                        md
+                                        controlId="tickerSearch"
+                                    >
+                                        <Form.Label column md>Stocks to trade:</Form.Label>
+                                        <Col>
+                                            <FuzzySearch
+                                                className="ticker-search"
+                                                list={this.state.tickersAndNames}
+                                                keys={['name']}
+                                                onSelect={(e) => { this.onTickerSelect(e) }}
+                                                keyForDisplayName={'name'}
+                                                maxResults={7}
+                                                placeholder={'Search stocks'}
+                                            />
+                                            <span className='ticker-error'>{this.state.securitySetErrorMsg}</span>
                                         </Col>
                                     </Form.Group>
                                 </Row>
