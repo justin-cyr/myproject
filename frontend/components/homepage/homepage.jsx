@@ -2,9 +2,11 @@ import React from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import CloseButton from 'react-bootstrap/CloseButton';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
 
 import FuzzySearch from 'react-fuzzy';
@@ -107,6 +109,7 @@ class Homepage extends React.Component {
         this.validateForm = this.validateForm.bind(this);
         this.displayStringToDate = this.displayStringToDate.bind(this);
         this.onTickerSelect = this.onTickerSelect.bind(this);
+        this.onTickerRemove = this.onTickerRemove.bind(this);
     };
 
     async getStockSymbols() {
@@ -123,8 +126,34 @@ class Homepage extends React.Component {
             let i = 0;
             while (toAdd > securitySet[i]) { ++i; }
             securitySet.splice(i, 0, toAdd);
-            this.setState({ securitySet: securitySet });
+            this.setState({ securitySet: securitySet }, this.validateSecuritySet);
         }
+    }
+
+    onTickerRemove(toRemove) {
+        let securitySet = this.state.securitySet;
+        const i = securitySet.indexOf(toRemove);
+        if (i > -1) {
+            securitySet.splice(i, 1);
+            this.setState({ securitySet: securitySet }, this.validateSecuritySet);
+        }
+    }
+
+    validateSecuritySet() {
+        let validForm = true;
+        let securitySetErrorMsg = '';
+
+        if (this.state.securitySet.length === 0) {
+            securitySetErrorMsg = 'Choose at least 1 stock';
+            validForm = false;
+        }
+
+        this.setState({
+            securitySetErrorMsg: securitySetErrorMsg,
+            checkedSecuritySet: true
+        });
+
+        return validForm;
     }
 
     dateToDisplayString(d) {
@@ -307,6 +336,29 @@ class Homepage extends React.Component {
     render() {
         // some javascript code
 
+        let selectedStocks = Array();
+
+        if (this.state.securitySet.length > 0) {
+            selectedStocks = this.state.securitySet.map(s =>
+                <ListGroup.Item
+                    key={s}
+                >
+                    <Container fluid className="ticker-container">
+                        <Row>
+                            <Col className="ticker-text">
+                                {s}
+                            </Col>
+                            <Col xs md="1">
+                                <CloseButton
+                                    className="ticker-cancel-btn"
+                                    onClick={(e) => { this.onTickerRemove(s) }}
+                                />
+                            </Col>
+                        </Row>
+                    </Container>
+                </ListGroup.Item>);
+        }
+
         // HTML - looking, with embedded javascript
         return (
         <div>
@@ -322,6 +374,7 @@ class Homepage extends React.Component {
             <Modal
                 show={this.state.showModal}
                 onHide={() => { this.setState({ showModal: false }) }}
+                size={'lg'}
             >
                     <Modal.Header closeButton>
                         <Modal.Title>Create Simulation</Modal.Title>
@@ -419,6 +472,21 @@ class Homepage extends React.Component {
                                                 placeholder={'Search stocks'}
                                             />
                                             <span className='ticker-error'>{this.state.securitySetErrorMsg}</span>
+                                        </Col>
+                                    </Form.Group>
+                                </Row>
+                                <Row>
+                                    <Form.Group
+                                        as={Row}
+                                        md
+                                    >
+                                        <Form.Label column md>Selected stocks:</Form.Label>
+                                        <Col>
+                                            <ListGroup
+                                                style={{ width: '430px' }}
+                                            >
+                                                {selectedStocks}
+                                            </ListGroup>
                                         </Col>
                                     </Form.Group>
                                 </Row>
